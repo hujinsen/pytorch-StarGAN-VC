@@ -1,4 +1,4 @@
-## [StarGAN-VC]()
+## [StarGAN-VC](https://github.com/hujinsen/awesome-pytorch-StarGAN-VC)
 
 This is a pytorch implementation of the paper: [StarGAN-VC: Non-parallel many-to-many voice conversion with star generative adversarial networks](https://arxiv.org/abs/1806.02169).
 
@@ -8,7 +8,7 @@ This is a pytorch implementation of the paper: [StarGAN-VC: Non-parallel many-to
 
 ![Snip20181102_2](https://github.com/hujinsen/StarGAN-Voice-Conversion/raw/master/imgs/Snip20181102_2.png)
 
-## [Dependencies]()
+## [Dependencies](https://github.com/hujinsen/awesome-pytorch-StarGAN-VC)
 - Python 3.6 
 - pytorch 1.0
 - librosa 
@@ -17,7 +17,7 @@ This is a pytorch implementation of the paper: [StarGAN-VC: Non-parallel many-to
 - scikit-learn
 
 
-## [Usage]()
+## [Usage](https://github.com/hujinsen/awesome-pytorch-StarGAN-VC)
 
 ### Download dataset
 
@@ -86,7 +86,7 @@ python main.py --mode test --test_iters 200000 --src_speaker TM1 --trg_speaker "
 
  Note: Our implementation follows the original paper’s network structure, while [pytorch StarGAN-VC code](https://github.com/liusongxiang/StarGAN-Voice-Conversion)‘didn't implemente the StarGAN-VC network, but StarGAN's network.
 
-## [Reference]()
+## [Reference](https://github.com/hujinsen/awesome-pytorch-StarGAN-VC)
 [tensorflow StarGAN-VC code](https://github.com/hujinsen/StarGAN-Voice-Conversion)
 
 [StarGAN code](https://github.com/taki0112/StarGAN-Tensorflow)
