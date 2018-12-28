@@ -13,7 +13,7 @@ SAMPLE_RATE = 16000
 FRAMES = 512
 FFTSIZE = 1024
 SPEAKERS_NUM = len(speakers)
-CHUNK_SIZE = 10
+CHUNK_SIZE = 5 # concate CHUNK_SIZE audio clips together
 EPSILON = 1e-10
 MODEL_NAME = 'starganvc_model'
 

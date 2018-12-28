@@ -90,5 +90,4 @@ if __name__ == '__main__':
     config = parser.parse_args()
     print(config)
     main(config)
-
-    #python main.py --mode test --test_iters 20 --src_speaker TM1 --trg_speaker "['TM1','SF1']"
+    
