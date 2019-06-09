@@ -30,7 +30,7 @@ class AudioDataset(Dataset):
         mcep = np.load(p)
         mcep = torch.FloatTensor(mcep)
         mcep = torch.unsqueeze(mcep, 0)
-        return mcep, speakers.index(speaker), torch.FloatTensor(label)
+        return mcep, torch.tensor(speakers.index(speaker), dtype=torch.long), torch.FloatTensor(label)
 
     def speaker_encoder(self):
         return self.encoder

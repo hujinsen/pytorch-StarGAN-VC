@@ -13,7 +13,7 @@ SAMPLE_RATE = 16000
 FRAMES = 512
 FFTSIZE = 1024
 SPEAKERS_NUM = len(speakers)
-CHUNK_SIZE = 5 # concate CHUNK_SIZE audio clips together
+CHUNK_SIZE = 1 # concate CHUNK_SIZE audio clips together
 EPSILON = 1e-10
 MODEL_NAME = 'starganvc_model'
 
@@ -46,7 +46,9 @@ def load_wavs(dataset: str, sr):
             filename = one_file.split('/')[-1].split('.')[0] #like 100061
             newkey = f'{filename}'
             wav, _ = librosa.load(one_file, sr=sr, mono=True, dtype=np.float64)
-            
+            y,_ = librosa.effects.trim(wav, top_db=15)
+            wav = np.append(y[0], y[1:] - 0.97 * y[:-1])
+
             resdict[key][newkey] = wav
             # resdict[key].append(temp_dict) #like TM1:{100062:[xxxxx], .... }
             print('.', end='')
@@ -102,7 +104,7 @@ def wav_to_mcep_file(dataset: str, sr=SAMPLE_RATE, processed_filepath: str = './
         
 
 def world_features(wav, sr, fft_size, dim):
-    f0, timeaxis = pyworld.harvest(wav, sr, f0_floor=71.0, f0_ceil = 800.0)
+    f0, timeaxis = pyworld.harvest(wav, sr)
     sp = pyworld.cheaptrick(wav, f0, timeaxis, sr,fft_size=fft_size)
     ap = pyworld.d4c(wav, f0, timeaxis, sr, fft_size=fft_size)
     coded_sp = pyworld.code_spectral_envelope(sp, sr, dim)
