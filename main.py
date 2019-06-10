@@ -43,14 +43,14 @@ if __name__ == '__main__':
 
     # Model configuration.
 
-    parser.add_argument('--lambda_cycle', type=float, default=10, help='weight for cycle loss')
-    parser.add_argument('--lambda_cls', type=float, default=1, help='weight for domain classification loss')
+    parser.add_argument('--lambda_cycle', type=float, default=3, help='weight for cycle loss')
+    parser.add_argument('--lambda_cls', type=float, default=2, help='weight for domain classification loss')
     
-    parser.add_argument('--lambda_identity', type=float, default=10, help='weight for identity loss')
+    parser.add_argument('--lambda_identity', type=float, default=2, help='weight for identity loss')
     
     # Training configuration.
     
-    parser.add_argument('--batch_size', type=int, default=32, help='mini-batch size')
+    parser.add_argument('--batch_size', type=int, default=4, help='mini-batch size')
     parser.add_argument('--num_iters', type=int, default=200000, help='number of total iterations for training D')
     parser.add_argument('--num_iters_decay', type=int, default=100000, help='number of iterations for decaying lr')
     parser.add_argument('--g_lr', type=float, default=0.0001, help='learning rate for G')
@@ -69,7 +69,7 @@ if __name__ == '__main__':
     parser.add_argument('--trg_speaker', type=str, default="['SF1', 'TM1']", help='string list repre of target speakers eg."[a,b]"')
 
     # Miscellaneous.
-    parser.add_argument('--num_workers', type=int, default=2)
+    parser.add_argument('--num_workers', type=int, default=4)
     parser.add_argument('--mode', type=str, default='train', choices=['train', 'test'])
     parser.add_argument('--use_tensorboard', type=str2bool, default=True)
 
@@ -85,7 +85,7 @@ if __name__ == '__main__':
     parser.add_argument('--log_step', type=int, default=10)
     parser.add_argument('--sample_step', type=int, default=2000)
     parser.add_argument('--model_save_step', type=int, default=10000)
-    parser.add_argument('--lr_update_step', type=int, default=1000)
+    parser.add_argument('--lr_update_step', type=int, default=100000)
 
     config = parser.parse_args()
     print(config)
