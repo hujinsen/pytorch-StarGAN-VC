@@ -130,8 +130,9 @@ class Discriminator(nn.Module):
         x = torch.cat([x, c5], dim=1)
         x = self.conv(x)
        
-        x = torch.sigmoid(x)
         x = self.pool(x)
+        x = torch.squeeze(x)
+        x = torch.tanh(x)
         return x
 
 class DomainClassifier(nn.Module):
@@ -144,7 +145,8 @@ class DomainClassifier(nn.Module):
             Down2d(16, 32, (4,4), (2,2), (0,1)),
             Down2d(32, 16, (3,4), (1,2), (1,1)),
             nn.Conv2d(16, 4, (1,4), (1,2), (0,1)),
-            nn.AvgPool2d((1,16))
+            nn.AvgPool2d((1,16)),
+            nn.LogSoftmax()
         )
         
     def forward(self, x):
@@ -180,3 +182,7 @@ if __name__ == '__main__':
     # C = DomainClassifier()
     # o3 = C(t)
     # print(o3.shape)
+    # m = nn.Softmax()
+    # input = torch.Tensor([[1,2],[5,5]])
+    # output = m(input)
+    # print(output)

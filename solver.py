@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 import numpy as np
 import torch
+import torch.nn as nn
 import torch.nn.functional as F
 from torch.autograd import Variable
 from torchvision.utils import save_image
@@ -139,8 +140,6 @@ class Solver(object):
                 data_iter = iter(self.data_loader)
                 x_real, speaker_idx_org, label_org = next(data_iter)           
 
-            # print(speaker_idx_org, label_org)
-
             # Generate target domain labels randomly.
             rand_idx = torch.randperm(label_org.size(0))
             label_trg = label_org[rand_idx]
@@ -156,39 +155,56 @@ class Solver(object):
             #                             2. Train the discriminator                              #
             # =================================================================================== #
             # Compute loss with real audio frame.
-            
-            out_src = self.D(x_real, label_org)
-            d_loss_real = - torch.mean(out_src)
+            CELoss = nn.CrossEntropyLoss()
+            cls_real = self.C(x_real)
+            cls_loss_real = CELoss(input=cls_real, target=speaker_idx_org)
 
+            self.reset_grad()
+            cls_loss_real.backward()
+            self.c_optimizer.step()
+             # Logging.
+            loss = {}
+            loss['C/C_loss'] = cls_loss_real.item()
+
+            out_r = self.D(x_real, label_org)
             # Compute loss with fake audio frame.
             x_fake = self.G(x_real, label_trg)
-            out_src = self.D(x_fake.detach(), label_trg)
+            out_f = self.D(x_fake.detach(), label_trg)
+            d_loss_t = F.binary_cross_entropy_with_logits(input=out_f,target=torch.zeros_like(out_f, dtype=torch.float)) + \
+                F.binary_cross_entropy_with_logits(input=out_r, target=torch.ones_like(out_r, dtype=torch.float))
+           
             out_cls = self.C(x_fake)
-            d_loss_fake = torch.mean(out_src)
-            d_loss_cls = F.binary_cross_entropy_with_logits( out_cls, label_trg) 
+            d_loss_cls = CELoss(input=out_cls, target=speaker_idx_trg)
 
-            d_loss = d_loss_fake + d_loss_real + self.lambda_cls * d_loss_cls
+            # Compute loss for gradient penalty.
+            alpha = torch.rand(x_real.size(0), 1, 1, 1).to(self.device)
+            x_hat = (alpha * x_real.data + (1 - alpha) * x_fake.data).requires_grad_(True)
+            out_src = self.D(x_hat, label_trg)
+            d_loss_gp = self.gradient_penalty(out_src, x_hat)
+
+            d_loss = d_loss_t + self.lambda_cls * d_loss_cls + 5*d_loss_gp
+
             self.reset_grad()
             d_loss.backward()
             self.d_optimizer.step()
 
-            # Logging.
-            loss = {}
-            loss['D/loss_real'] = d_loss_real.item()
-            loss['D/loss_fake'] = d_loss_fake.item()
-            loss['D/loss_cls'] = d_loss_cls.item()
+
+            # loss['D/d_loss_t'] = d_loss_t.item()
+            # loss['D/loss_cls'] = d_loss_cls.item()
+            # loss['D/D_gp'] = d_loss_gp.item()
+            loss['D/D_loss'] = d_loss.item()
+
             # =================================================================================== #
             #                               3. Train the generator                                #
             # =================================================================================== #        
             if (i+1) % self.n_critic == 0:
                 # Original-to-target domain.
                 x_fake = self.G(x_real, label_trg)
-                out_src = self.D(x_fake, label_trg)
-                g_loss_fake = - torch.mean(out_src)
-
-                out_cls = self.C(x_fake)
+                g_out_src = self.D(x_fake, label_trg)
+                g_loss_fake = F.binary_cross_entropy_with_logits(input=g_out_src, target=torch.ones_like(g_out_src, dtype=torch.float))
                 
-                g_loss_cls = F.binary_cross_entropy_with_logits(out_cls, label_trg)
+                out_cls = self.C(x_real)
+                g_loss_cls = CELoss(input=out_cls, target=speaker_idx_org)
 
                 # Target-to-original domain.
                 x_reconst = self.G(x_fake, label_org)
@@ -201,6 +217,7 @@ class Solver(object):
                 # Backward and optimize.
                 g_loss = g_loss_fake + self.lambda_cycle * g_loss_rec +\
                  self.lambda_cls * g_loss_cls + self.lambda_identity * id_loss
+                 
                 self.reset_grad()
                 g_loss.backward()
                 self.g_optimizer.step()
@@ -210,7 +227,7 @@ class Solver(object):
                 loss['G/loss_rec'] = g_loss_rec.item()
                 loss['G/loss_cls'] = g_loss_cls.item()
                 loss['G/loss_id'] = id_loss.item()
-
+                loss['G/g_loss'] = g_loss.item()
             # =================================================================================== #
             #                                 4. Miscellaneous                                    #
             # =================================================================================== #
@@ -284,6 +301,19 @@ class Solver(object):
                 self.update_lr(g_lr, d_lr, c_lr)
                 print ('Decayed learning rates, g_lr: {}, d_lr: {}.'.format(g_lr, d_lr))
 
+    def gradient_penalty(self, y, x):
+        """Compute gradient penalty: (L2_norm(dy/dx) - 1)**2."""
+        weight = torch.ones(y.size()).to(self.device)
+        dydx = torch.autograd.grad(outputs=y,
+                                   inputs=x,
+                                   grad_outputs=weight,
+                                   retain_graph=True,
+                                   create_graph=True,
+                                   only_inputs=True)[0]
+
+        dydx = dydx.view(dydx.size(0), -1)
+        dydx_l2norm = torch.sqrt(torch.sum(dydx**2, dim=1))
+        return torch.mean((dydx_l2norm-1)**2)
 
     def reset_grad(self):
         """Reset the gradient buffers."""
@@ -362,6 +392,7 @@ class Solver(object):
                     librosa.output.write_wav(path, wav, SAMPLE_RATE)            
 
 
+    
 
 if __name__ == '__main__':
     pass
