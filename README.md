@@ -2,12 +2,12 @@
 
 This is a pytorch implementation of the paper: [StarGAN-VC: Non-parallel many-to-many voice conversion with star generative adversarial networks](https://arxiv.org/abs/1806.02169).
 
-**The converted voice examples are in *samples* directory**
+**The converted voice examples are in *samples* and *results_2019-06-10* directory**
 
 
 
 ## [Dependencies](https://github.com/hujinsen/pytorch-StarGAN-VC)
-- Python 3.6 
+- Python 3.6+
 - pytorch 1.0
 - librosa 
 - pyworld 
@@ -102,6 +102,13 @@ python main.py --mode test --test_iters 200000 --src_speaker TM1 --trg_speaker "
 
 [CycleGAN paper](https://arxiv.org/abs/1703.10593v4)
 
+
+## Update 2019/06/10
+
+The former implementation's network structure is the network of the original paper, but in order to achieve better conversion effect, the following modifications are made in this update:
+- Modification of classifier without training problem
+- Update loss function
+- Modify the discriminator activation function to tanh
 ---
 
 If you feel this repo is good, please  **star**  ! 
