@@ -105,7 +105,7 @@ python main.py --mode test --test_iters 200000 --src_speaker TM1 --trg_speaker "
 
 ## Update 2019/06/10
 
-The former implementation's network structure is the network of the original paper, but in order to achieve better conversion effect, the following modifications are made in this update:
+The former implementation's network structure is the network of the original paper, but in order to achieve better conversion result, the following modifications are made in this update:
 - Modification of classifier without training problem
 - Update loss function
 - Modify the discriminator activation function to tanh
