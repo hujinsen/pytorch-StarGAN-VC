@@ -87,7 +87,8 @@ if __name__ == '__main__':
     parser.add_argument('--model_save_step', type=int, default=10000)
     parser.add_argument('--lr_update_step', type=int, default=100000)
 
-    config = parser.parse_args()
+    config = parser.parse_args("")
+    # added "" for default arguments parsing
     print(config)
     main(config)
     

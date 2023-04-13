@@ -132,7 +132,8 @@ if __name__ == "__main__":
     parser.add_argument('--input_dir', type = str, help = 'the direcotry contains data need to be processed', default = input_dir)
     parser.add_argument('--output_dir', type = str, help = 'the directory stores the processed data', default = output_dir)
     
-    argv = parser.parse_args()
+    argv = parser.parse_args("")
+	# added "" for parsing default arguments
     input_dir = argv.input_dir
     output_dir = argv.output_dir
 
