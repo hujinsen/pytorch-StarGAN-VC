@@ -38,8 +38,9 @@ def download_vcc2016():
     unzip(data_files[1])
     
     print('Finish download dataset...')
+# removed "four" form speakers as it wasn't used later
 
-def create_dirs(trainset: str='./data/fourspeakers', testset: str='./data/fourspeakers_test'):
+def create_dirs(trainset: str='./data/speakers', testset: str='./data/speakers_test'):
     '''create train test dirs'''
     if not os.path.exists(trainset):
         print(f'create train set dir {trainset}')
@@ -54,14 +55,16 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description = 'Download  voice conversion datasets.')
 
     datasets_default = 'vcc2016'
-    train_dir = './data/fourspeakers'
-    test_dir = './data/fourspeakers_test'
+    train_dir = './data/speakers'
+    test_dir = './data/speakers_test'
+#changed from fourspeakers to speakers
     parser.add_argument('--datasets', type = str, help = 'Datasets available: vcc2016', default = datasets_default)
     
     parser.add_argument('--train_dir', type = str, help = 'trainset directory', default = train_dir)
     parser.add_argument('--test_dir', type = str, help = 'testset directory', default = test_dir)
 
-    argv = parser.parse_args()
+    argv = parser.parse_args("")
+# inserted "" for parsing the arguments as defaults
 
     datasets = argv.datasets
     create_dirs(train_dir, test_dir)

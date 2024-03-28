@@ -110,7 +110,8 @@ if __name__=='__main__':
     ad = AudioDataset('./data/processed')
     print(len(ad))
 
-    data, s,label = ad[500]
+    data, s,label = ad[367]
+# changed index from 500 to 367 as only 368 were processed and was throwing exception
     print(data, label) 
     # loader = data_loader('./data/processed', batch_size=4)   
     
